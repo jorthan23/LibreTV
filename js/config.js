@@ -27,10 +27,10 @@ const API_SITES = {
         name: '空内容测试源',
         adult: true
     },
-    lizySource:{
+    lziSource: {
         api: 'http://cj.lziapi.com/api.php/provide/vod/from/lzm3u8',
-        name:'量子资源',
-        adult: true
+        name: '量子資源',
+        adult: false
     }
 
     //ARCHIVE https://telegra.ph/APIs-08-12
