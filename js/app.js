@@ -1,5 +1,5 @@
 // 全局变量
-let selectedAPIs = JSON.parse(localStorage.getItem('selectedAPIs') || '["tyyszy","dyttzy", "bfzy", "ruyi"]'); // 默认选中资源
+let selectedAPIs = JSON.parse(localStorage.getItem('selectedAPIs') || '["hongniuzy2Source","lziSource"]'); // 默认选中资源
 let customAPIs = JSON.parse(localStorage.getItem('customAPIs') || '[]'); // 存储自定义API列表
 
 // 添加当前播放的集数索引
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 设置默认API选择（如果是第一次加载）
     if (!localStorage.getItem('hasInitializedDefaults')) {
         // 默认选中资源
-        selectedAPIs = ["tyyszy", "bfzy", "dyttzy", "ruyi"];
+        selectedAPIs = ["hongniuzy2Source","lziSource"];//"tyyszy", "bfzy", "dyttzy", "ruyi"
         localStorage.setItem('selectedAPIs', JSON.stringify(selectedAPIs));
 
         // 默认选中过滤开关
@@ -639,7 +639,13 @@ async function search() {
     try {
         // 保存搜索历史
         saveSearchHistory(query);
-
+		if(query.indexOf(',') > -1){
+			query = query.split(',')[1];
+		}
+		if(query.indexOf('，') > -1){
+			query = query.split('，')[1];
+		}
+		document.getElementById('searchInput').value = query;
         // 从所有选中的API源搜索
         let allResults = [];
         const searchPromises = selectedAPIs.map(apiId => 

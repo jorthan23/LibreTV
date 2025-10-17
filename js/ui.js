@@ -143,7 +143,7 @@ function closeModal() {
 // 获取搜索历史的增强版本 - 支持新旧格式
 function getSearchHistory() {
     try {
-        const data = localStorage.getItem(SEARCH_HISTORY_KEY);
+        const data =  localStorage.getItem(SEARCH_HISTORY_KEY); //'[{"text":"1,神印王座","timestamp":1760551770119,"days": 1}, {"text":"完美世界","timestamp":1760551770119,"days": 0}]';//
         if (!data) return [];
 
         const parsed = JSON.parse(data);
@@ -154,7 +154,7 @@ function getSearchHistory() {
         // 支持旧格式（字符串数组）和新格式（对象数组）
         return parsed.map(item => {
             if (typeof item === 'string') {
-                return { text: item, timestamp: 0 };
+                return { text: item, timestamp: 0, days: 0 };
             }
             return item;
         }).filter(item => item && item.text);
@@ -178,8 +178,16 @@ function saveSearchHistory(query) {
 
     // 过滤掉超过2个月的记录（约60天，60*24*60*60*1000 = 5184000000毫秒）
     history = history.filter(item =>
-        typeof item === 'object' && item.timestamp && (now - item.timestamp < 5184000000)
+        typeof item === 'object' && item.timestamp && (now - item.timestamp < 5184000000 || (item.days != undefined && item.days > 0))
     );
+	let days = 0;
+	if(query.indexOf(',') > -1){
+		days = parseInt(query.split(',')[0]);
+	}
+	if(query.indexOf('，') > -1){
+		days = parseInt(query.split('，')[0]);
+		query = query.replace('，',',');
+	}
 
     // 删除已存在的相同项
     history = history.filter(item =>
@@ -189,12 +197,22 @@ function saveSearchHistory(query) {
     // 新项添加到开头，包含时间戳
     history.unshift({
         text: query,
-        timestamp: now
+        timestamp: now,
+		days: days
     });
 
     // 限制历史记录数量
-    if (history.length > MAX_HISTORY_ITEMS) {
-        history = history.slice(0, MAX_HISTORY_ITEMS);
+    if (days == 0 && history.length > MAX_HISTORY_ITEMS) {
+        //history = history.slice(0, MAX_HISTORY_ITEMS);
+		for(var ii = 0; ii < history.length; ii++){
+			if(history[ii].days == undefined || history[ii].days == 0){
+				history = history.slice(0, 1);
+				ii = -1;
+				if(history.length <= MAX_HISTORY_ITEMS){
+					break;
+				}
+			}
+		}
     }
 
     try {
@@ -216,6 +234,13 @@ function saveSearchHistory(query) {
 // 渲染最近搜索历史的增强版本
 function renderSearchHistory() {
     const historyContainer = document.getElementById('recentSearches');
+    const historyContainer1 = document.getElementById('recentSearches1');
+    const historyContainer2 = document.getElementById('recentSearches2');
+    const historyContainer3 = document.getElementById('recentSearches3');
+    const historyContainer4 = document.getElementById('recentSearches4');
+    const historyContainer5 = document.getElementById('recentSearches5');
+    const historyContainer6 = document.getElementById('recentSearches6');
+    const historyContainer7 = document.getElementById('recentSearches7');
     if (!historyContainer) return;
 
     const history = getSearchHistory();
@@ -230,17 +255,92 @@ function renderSearchHistory() {
         <div class="flex justify-between items-center w-full mb-2">
             <div class="text-gray-500">最近搜索:</div>
             <button id="clearHistoryBtn" class="text-gray-500 hover:text-white transition-colors"
-                    onclick="clearSearchHistory()" aria-label="清除搜索历史">
+                    onclick="clearSearchHistory(0)" aria-label="清除搜索历史">
                 清除搜索历史
             </button>
         </div>
     `;
+	
+	historyContainer1.innerHTML = `
+	    <div class="flex justify-between items-center w-full mb-2">
+	        <div class="text-gray-500">周一:</div>
+	        <button id="clearHistoryBtn" class="text-gray-500 hover:text-white transition-colors"
+	                onclick="clearSearchHistory(1)" aria-label="清除搜索历史">
+	            清除搜索历史
+	        </button>
+	    </div>
+	`;
+	
+	historyContainer2.innerHTML = `
+	    <div class="flex justify-between items-center w-full mb-2">
+	        <div class="text-gray-500">周二:</div>
+	        <button id="clearHistoryBtn" class="text-gray-500 hover:text-white transition-colors"
+	                onclick="clearSearchHistory(2)" aria-label="清除搜索历史">
+	            清除搜索历史
+	        </button>
+	    </div>
+	`;
+	
+	historyContainer3.innerHTML = `
+	    <div class="flex justify-between items-center w-full mb-2">
+	        <div class="text-gray-500">周三:</div>
+	        <button id="clearHistoryBtn" class="text-gray-500 hover:text-white transition-colors"
+	                onclick="clearSearchHistory(3)" aria-label="清除搜索历史">
+	            清除搜索历史
+	        </button>
+	    </div>
+	`;
+	
+	historyContainer4.innerHTML = `
+	    <div class="flex justify-between items-center w-full mb-2">
+	        <div class="text-gray-500">周四:</div>
+	        <button id="clearHistoryBtn" class="text-gray-500 hover:text-white transition-colors"
+	                onclick="clearSearchHistory(4)" aria-label="清除搜索历史">
+	            清除搜索历史
+	        </button>
+	    </div>
+	`;
+	
+	historyContainer5.innerHTML = `
+	    <div class="flex justify-between items-center w-full mb-2">
+	        <div class="text-gray-500">周五:</div>
+	        <button id="clearHistoryBtn" class="text-gray-500 hover:text-white transition-colors"
+	                onclick="clearSearchHistory(5)" aria-label="清除搜索历史">
+	            清除搜索历史
+	        </button>
+	    </div>
+	`;
+	
+	historyContainer6.innerHTML = `
+	    <div class="flex justify-between items-center w-full mb-2">
+	        <div class="text-gray-500">周六:</div>
+	        <button id="clearHistoryBtn" class="text-gray-500 hover:text-white transition-colors"
+	                onclick="clearSearchHistory(6)" aria-label="清除搜索历史">
+	            清除搜索历史
+	        </button>
+	    </div>
+	`;
+	
+	historyContainer7.innerHTML = `
+	    <div class="flex justify-between items-center w-full mb-2">
+	        <div class="text-gray-500">周日:</div>
+	        <button id="clearHistoryBtn" class="text-gray-500 hover:text-white transition-colors"
+	                onclick="clearSearchHistory(7)" aria-label="清除搜索历史">
+	            清除搜索历史
+	        </button>
+	    </div>
+	`;
 
     history.forEach(item => {
         const tag = document.createElement('button');
         tag.className = 'search-tag flex items-center gap-1';
         const textSpan = document.createElement('span');
-        textSpan.textContent = item.text;
+		if(item.text.indexOf(',') > -1){
+			textSpan.textContent = item.text.split(',')[1];
+		}
+		else{
+			textSpan.textContent = item.text;
+		}
         tag.appendChild(textSpan);
 
         // 添加删除按钮
@@ -267,7 +367,30 @@ function renderSearchHistory() {
             document.getElementById('searchInput').value = item.text;
             search();
         };
-        historyContainer.appendChild(tag);
+		if(item.days == undefined || item.days == 0){
+			historyContainer.appendChild(tag);
+		}
+		if(item.days != undefined && item.days == 1){
+			historyContainer1.appendChild(tag);
+		}
+		if(item.days != undefined && item.days == 2){
+			historyContainer2.appendChild(tag);
+		}
+		if(item.days != undefined && item.days == 3){
+			historyContainer3.appendChild(tag);
+		}
+		if(item.days != undefined && item.days == 4){
+			historyContainer4.appendChild(tag);
+		}
+		if(item.days != undefined && item.days == 5){
+			historyContainer5.appendChild(tag);
+		}
+		if(item.days != undefined && item.days == 6){
+			historyContainer6.appendChild(tag);
+		}
+		if(item.days != undefined && item.days == 7){
+			historyContainer7.appendChild(tag);
+		}
     });
 }
 
@@ -287,7 +410,7 @@ function deleteSingleSearchHistory(query) {
 }
 
 // 增加清除搜索历史功能
-function clearSearchHistory() {
+function clearSearchHistory(days) {
     // 密码保护校验
     if (window.isPasswordProtected && window.isPasswordVerified) {
         if (window.isPasswordProtected() && !window.isPasswordVerified()) {
@@ -296,7 +419,58 @@ function clearSearchHistory() {
         }
     }
     try {
-        localStorage.removeItem(SEARCH_HISTORY_KEY);
+		let history = getSearchHistory();
+		
+		if(days == undefined || days == 0){
+			history = history.filter(item =>
+			    typeof item === 'object' && (item.days != undefined && item.days > 0)
+			);
+			localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+		}
+		else if(days != undefined && days == 1){
+			history = history.filter(item =>
+			    typeof item === 'object' && item.days !=1
+			);
+			localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+		}
+		else if(days != undefined && days == 2){
+			history = history.filter(item =>
+			    typeof item === 'object' && item.days !=2
+			);
+			localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+		}
+		else if(days != undefined && days == 3){
+			history = history.filter(item =>
+			    typeof item === 'object' && item.days !=3
+			);
+			localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+		}
+		else if(days != undefined && days == 4){
+			history = history.filter(item =>
+			    typeof item === 'object' && item.days !=4
+			);
+			localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+		}
+		else if(days != undefined && days == 5){
+			history = history.filter(item =>
+			    typeof item === 'object' && item.days !=5
+			);
+			localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+		}
+		else if(days != undefined && days == 6){
+			history = history.filter(item =>
+			    typeof item === 'object' && item.days !=6
+			);
+			localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+		}
+		else if(days != undefined && days == 7){
+			history = history.filter(item =>
+			    typeof item === 'object' && item.days !=7
+			);
+			localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+		}
+		
+        //localStorage.removeItem(SEARCH_HISTORY_KEY);
         renderSearchHistory();
         showToast('搜索历史已清除', 'success');
     } catch (e) {
