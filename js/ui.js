@@ -183,10 +183,15 @@ function saveSearchHistory(query) {
 	let days = 0;
 	if(query.indexOf(',') > -1){
 		days = parseInt(query.split(',')[0]);
+		query = query.replace(',','-');
 	}
 	if(query.indexOf('，') > -1){
 		days = parseInt(query.split('，')[0]);
-		query = query.replace('，',',');
+		query = query.replace('，','-');
+	}
+	if(query.indexOf('-') > -1){
+		days = parseInt(query.split('-')[0]);
+		query = query.replace('-','-');
 	}
 
     // 删除已存在的相同项
@@ -334,9 +339,15 @@ function renderSearchHistory() {
     history.forEach(item => {
         const tag = document.createElement('button');
         tag.className = 'search-tag flex items-center gap-1';
-        const textSpan = document.createElement('span');
+        let textSpan = document.createElement('span');
 		if(item.text.indexOf(',') > -1){
 			textSpan.textContent = item.text.split(',')[1];
+		}
+		else if(item.text.indexOf('，') > -1){
+			textSpan.textContent = item.text.split('，')[1];
+		}
+		else if(item.text.indexOf('-') > -1){
+			textSpan.textContent = item.text.split('-')[1];
 		}
 		else{
 			textSpan.textContent = item.text;

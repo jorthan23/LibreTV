@@ -622,7 +622,7 @@ async function search() {
         console.warn('Password protection check failed:', error.message);
         return;
     }
-    const query = document.getElementById('searchInput').value.trim();
+    let query = document.getElementById('searchInput').value.trim();
 
     if (!query) {
         showToast('请输入搜索内容', 'info');
@@ -637,6 +637,17 @@ async function search() {
     showLoading();
 
     try {
+		let query2 = query;
+		if(query.indexOf(',') > -1){
+			query2 = query.split(',')[1];
+		}
+		if(query.indexOf('，') > -1){
+			query2 = query.split('，')[1];
+		}
+		if(query.indexOf('-') > -1){
+			query2 = query.split('-')[1];
+		}
+		document.getElementById('searchInput').value = query2;
         // 保存搜索历史
         saveSearchHistory(query);
 		if(query.indexOf(',') > -1){
@@ -645,7 +656,9 @@ async function search() {
 		if(query.indexOf('，') > -1){
 			query = query.split('，')[1];
 		}
-		document.getElementById('searchInput').value = query;
+		if(query.indexOf('-') > -1){
+			query = query.split('-')[1];
+		}
         // 从所有选中的API源搜索
         let allResults = [];
         const searchPromises = selectedAPIs.map(apiId => 
